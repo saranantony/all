@@ -829,6 +829,7 @@ def critsit():
                 array_instanceip.append(ls[4])
 
     date = time.strftime("%Y-%m-%d")
+    lotsa_colors = colors.get_named_colors_mapping()
     for i in range(len(array_name)):
         params = (
             ('agentType', 'RAID'),
@@ -849,19 +850,17 @@ def critsit():
     df1 = df.drop(df.index[0])
     df.to_csv(''+array_instancename[i]+'-'+testVar+'LUNperfdetails.csv')
     df1['DATETIME'] = pd.to_datetime(df1['DATETIME'])
-    for i in range(len(Lun_name)):
+    for cname,i in zip(lotsa_colors,(len(Lun_name))):
         # plt.plot(df.loc[df['LDEV_NUMBER'] =='%s'%Lun_name[i]]['RECORD_TIME'], df.loc[df['LDEV_NUMBER'] == '%s'%Lun_name[i]]['READ_IO_COUNT'])
         X = list(df1.loc[df1['LDEV_NUMBER'] == '%s' % Lun_name[i]]['DATETIME'])
         Y = list(df1.loc[df1['LDEV_NUMBER'] == '%s' % Lun_name[i]]['READ_IO_COUNT'])
         ax = plt.axes()
-        ax.xaxis.set_minor_locator(dates.HourLocator(interval=4))  # every 4 hours
-        ax.xaxis.set_minor_formatter(dates.DateFormatter('%H:%M'))  # hours and minutes
-        ax.xaxis.set_major_locator(dates.DayLocator(interval=1))  # every day
-        ax.xaxis.set_major_formatter(dates.DateFormatter('\n%d-%m-%Y'))
+        ax.xaxis.set_major_locator(dates.HourLocator(interval=2))  # every 2 hours
+        ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))  # hours and minutes
 
         for i in range(len(Y)):
             Y[i] = int(Y[i])
-        plt.plot(X, Y)
+        plt.plot(X, Y,color=lotsa_colors[cname])
         plt.ylabel('Read IOPS/sec')
         plt.xlabel('Time')
         plt.legend(Lun_name,loc="upper center",bbox_to_anchor=(1,0.5),ncol=6)
@@ -869,17 +868,15 @@ def critsit():
     plt.savefig('' + my_folder + '\lunreadiocount' + date + '.png',dpi=300)
     plt.clf()
     plt.close()
-    for i in range(len(Lun_name)):
+    for cname,i in zip(lotsa_colors,(len(Lun_name))):
         X = []
         Y = []
         # plt.plot(df.loc[df['LDEV_NUMBER'] =='%s'%Lun_name[i]]['RECORD_TIME'], df.loc[df['LDEV_NUMBER'] == '%s'%Lun_name[i]]['READ_IO_COUNT'])
         X = list(df1.loc[df1['LDEV_NUMBER'] == '%s' % Lun_name[i]]['DATETIME'])
         Y = list(df1.loc[df1['LDEV_NUMBER'] == '%s' % Lun_name[i]]['WRITE_IO_COUNT'])
         ax = plt.axes()
-        ax.xaxis.set_minor_locator(dates.HourLocator(interval=4))  # every 4 hours
-        ax.xaxis.set_minor_formatter(dates.DateFormatter('%H:%M'))  # hours and minutes
-        ax.xaxis.set_major_locator(dates.DayLocator(interval=1))  # every day
-        ax.xaxis.set_major_formatter(dates.DateFormatter('\n%d-%m-%Y'))
+        ax.xaxis.set_major_locator(dates.HourLocator(interval=4))  # every 4 hours
+        ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))  # hours and minutes
         for i in range(len(Y)):
             Y[i] = int(Y[i])
         plt.plot(X, Y)
